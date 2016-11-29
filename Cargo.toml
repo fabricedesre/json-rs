@@ -9,3 +9,6 @@ readme      = "README.md"
 keywords    = [ "json", "parser", "simple", "easy" ]
 license     = "BSD-2-Clause"
 
+[features]
+core = []
+default = ["core"]

@@ -1,4 +1,10 @@
+#[cfg(feature = "core")]
+pub use collections::{String, Vec};
+
+#[cfg(not(feature = "core"))]
 use std::collections::HashMap;
+#[cfg(feature = "core")]
+use hash_map::HashMap;
 
 use error::Error;
 use parser::node;
@@ -15,31 +21,27 @@ pub enum Json {
 }
 
 impl Json {
-    pub fn parse(text: &str) -> Result<Json, Error>
-    {
-        let mut slice    = text.chars();
+    pub fn parse(text: &str) -> Result<Json, Error> {
+        let mut slice = text.chars();
         let mut peekable = (&mut slice).peekable();
 
         node(&mut peekable)
     }
 
-    pub fn to_string(&self) -> String
-    {
+    #[cfg(not(feature = "core"))]
+    pub fn to_string(&self) -> String {
         let mut string: String = String::new();
 
         match self {
             &Json::Null => {
                 string.push_str("null");
-            },
+            }
             &Json::Boolean(value) => {
-                string.push_str(
-                    if value { "true"  }
-                    else     { "false" }
-                );
-            },
+                string.push_str(if value { "true" } else { "false" });
+            }
             &Json::Number(ref value) => {
                 string.push_str(value.to_string().as_str());
-            },
+            }
             &Json::String(ref value) => {
                 string.push('"');
                 for chr in value.chars() {
@@ -49,7 +51,7 @@ impl Json {
                     string.push(chr);
                 }
                 string.push('"');
-            },
+            }
             &Json::Array(ref value) => {
                 let mut first = true;
 
@@ -62,7 +64,7 @@ impl Json {
                     first = false;
                 }
                 string.push(']');
-            },
+            }
             &Json::Object(ref value) => {
                 let mut first = true;
 
@@ -84,97 +86,75 @@ impl Json {
                     first = false;
                 }
                 string.push('}');
-            },
+            }
         }
 
         string
     }
 }
 
-impl From<HashMap<String, Json>> for Json
-{
-    fn from(map: HashMap<String, Json>) -> Json
-    {
+impl From<HashMap<String, Json>> for Json {
+    fn from(map: HashMap<String, Json>) -> Json {
         Json::Object(map)
     }
 }
 
-impl From<Vec<Json>> for Json
-{
-    fn from(vector: Vec<Json>) -> Json
-    {
+impl From<Vec<Json>> for Json {
+    fn from(vector: Vec<Json>) -> Json {
         Json::Array(vector)
     }
 }
 
-impl From<String> for Json
-{
-    fn from(string: String) -> Json
-    {
+impl From<String> for Json {
+    fn from(string: String) -> Json {
         Json::String(string)
     }
 }
 
-impl<'a> From<&'a str> for Json
-{
-    fn from(string: &'a str) -> Json
-    {
+impl<'a> From<&'a str> for Json {
+    fn from(string: &'a str) -> Json {
         Json::String(String::from(string))
     }
 }
 
-impl From<u64> for Json
-{
-    fn from(number: u64) -> Json
-    {
+impl From<u64> for Json {
+    fn from(number: u64) -> Json {
         Json::Number(Number::Unsigned(number))
     }
 }
 
-impl From<i32> for Json
-{
-    fn from(number: i32) -> Json
-    {
+impl From<i32> for Json {
+    fn from(number: i32) -> Json {
         Json::Number(Number::Integer(number as i64))
     }
 }
 
-impl From<i64> for Json
-{
-    fn from(number: i64) -> Json
-    {
+impl From<i64> for Json {
+    fn from(number: i64) -> Json {
         Json::Number(Number::Integer(number))
     }
 }
 
-impl From<f64> for Json
-{
-    fn from(number: f64) -> Json
-    {
+impl From<f64> for Json {
+    fn from(number: f64) -> Json {
         Json::Number(Number::Float(number))
     }
 }
 
-impl From<bool> for Json
-{
-    fn from(value: bool) -> Json
-    {
+impl From<bool> for Json {
+    fn from(value: bool) -> Json {
         Json::Boolean(value)
     }
 }
 
-impl From<()> for Json
-{
-    fn from(_: ()) -> Json
-    {
+impl From<()> for Json {
+    fn from(_: ()) -> Json {
         Json::Null
     }
 }
 
-impl From<Json> for HashMap<String, Json>
-{
-    fn from(json: Json) -> HashMap<String, Json>
-    {
+impl From<Json> for HashMap<String, Json> {
+    fn from(json: Json) -> HashMap<String, Json> {
         if let Json::Object(ref value) = json {
             return value.clone();
 
@@ -184,10 +164,8 @@ impl From<Json> for HashMap<String, Json>
     }
 }
 
-impl From<Json> for Vec<Json>
-{
-    fn from(json: Json) -> Vec<Json>
-    {
+impl From<Json> for Vec<Json> {
+    fn from(json: Json) -> Vec<Json> {
         if let Json::Array(ref value) = json {
             return value.clone();
 
@@ -197,10 +175,8 @@ impl From<Json> for Vec<Json>
     }
 }
 
-impl From<Json> for String
-{
-    fn from(json: Json) -> String
-    {
+impl From<Json> for String {
+    fn from(json: Json) -> String {
         if let Json::String(ref value) = json {
             return value.clone();
 
@@ -210,10 +186,8 @@ impl From<Json> for String
     }
 }
 
-impl From<Json> for u64
-{
-    fn from(json: Json) -> u64
-    { 
+impl From<Json> for u64 {
+    fn from(json: Json) -> u64 {
         match json {
             Json::Number(value) => value.into(),
             _ => {
@@ -223,10 +197,8 @@ impl From<Json> for u64
     }
 }
 
-impl From<Json> for i64
-{
-    fn from(json: Json) -> i64
-    {
+impl From<Json> for i64 {
+    fn from(json: Json) -> i64 {
         if let Json::Number(ref value) = json {
             value.clone().into()
 
@@ -236,10 +208,8 @@ impl From<Json> for i64
     }
 }
 
-impl From<Json> for f64
-{
-    fn from(json: Json) -> f64
-    {
+impl From<Json> for f64 {
+    fn from(json: Json) -> f64 {
         if let Json::Number(ref value) = json {
             value.clone().into()
 
@@ -249,10 +219,8 @@ impl From<Json> for f64
     }
 }
 
-impl From<Json> for bool
-{
-    fn from(json: Json) -> bool
-    {
+impl From<Json> for bool {
+    fn from(json: Json) -> bool {
         if let Json::Boolean(value) = json {
             return value;
 
@@ -262,13 +230,10 @@ impl From<Json> for bool
     }
 }
 
-impl From<Json> for ()
-{
-    fn from(json: Json) -> ()
-    {
+impl From<Json> for () {
+    fn from(json: Json) -> () {
         if json != Json::Null {
             panic!("Expecting Json::Null, got {:?}", json);
         }
     }
 }
-

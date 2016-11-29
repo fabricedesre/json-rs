@@ -1,3 +1,8 @@
+#[cfg(feature = "core")]
+use collections::String;
+#[cfg(feature = "core")]
+use collections::string::ToString;
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Number
 {
