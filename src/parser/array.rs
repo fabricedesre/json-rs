@@ -13,7 +13,6 @@ use parser::node;
 pub fn array(slice: &mut Peekable<&mut Chars>) -> Result<Json, Error> {
     let mut array = Vec::new();
 
-    #[derive(Debug, PartialEq)]
     enum Stages {
         Start,
         FirstValue,

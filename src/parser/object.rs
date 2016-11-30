@@ -18,7 +18,6 @@ pub fn object(slice: &mut Peekable<&mut Chars>) -> Result<Json, Error> {
     let mut object = HashMap::new();
     let mut index = String::new();
 
-    #[derive(Debug, PartialEq)]
     enum Stages {
         Start,
         Index,

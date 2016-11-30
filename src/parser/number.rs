@@ -13,7 +13,6 @@ use number::Number;
 pub fn number(slice: &mut Peekable<&mut Chars>) -> Result<Json, Error> {
     let mut token = String::new();
 
-    #[derive(Debug, PartialEq)]
     enum Stages {
         Sign,
         AfterSign,

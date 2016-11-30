@@ -14,7 +14,6 @@ pub fn string(slice: &mut Peekable<&mut Chars>) -> Result<Json, Error> {
     let mut token = String::new();
     let mut unicode = String::new();
 
-    #[derive(Debug, PartialEq)]
     enum Stages {
         Start,
         Unescaped,
