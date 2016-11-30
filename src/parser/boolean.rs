@@ -7,8 +7,6 @@ use std::str::Chars;
 use error::Error;
 use json::Json;
 
-use super::*;
-
 pub fn boolean(slice: &mut Peekable<&mut Chars>) -> Result<Json, Error> {
     let value;
 
@@ -30,13 +28,23 @@ pub fn boolean(slice: &mut Peekable<&mut Chars>) -> Result<Json, Error> {
                 "true"
             }
             _ => {
-                // This can't happen...
                 return Err(Error::InvalidCharacter(current.to_string()));
             }
         }
     };
 
-    check_str(s, slice)?;
+    for c in s.chars() {
+        let current = match slice.next() {
+            Some(chr) => chr,
+            None => {
+                return Err(Error::UnexpectedEof);
+            }
+        };
+
+        if current != c {
+            return Err(Error::InvalidCharacter(current.to_string()));
+        }
+    }
 
     Ok(Json::Boolean(value))
 }
